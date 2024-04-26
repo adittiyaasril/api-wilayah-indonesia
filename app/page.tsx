@@ -1,9 +1,11 @@
 import DropdownPage from "@/components/DroopdownPage";
 
-export default function Home() {
+const Home: React.FC = () => {
   return (
     <div>
       <DropdownPage />
     </div>
   );
-}
+};
+
+export default Home;

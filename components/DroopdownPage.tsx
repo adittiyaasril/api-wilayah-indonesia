@@ -1,46 +1,33 @@
 "use client";
-import React, { useState, useEffect } from "react";
+
+import React, { useState, useEffect, ChangeEvent } from "react";
 import axios from "axios";
-import Dropdown from "./Dropdown";
-
-interface Province {
-  id: string;
-  name: string;
-}
-
-interface Regency {
-  id: string;
-  name: string;
-}
-
-interface District {
-  id: string;
-  name: string;
-}
-
-interface Village {
-  id: string;
-  name: string;
-}
+import { Select, SelectItem } from "@nextui-org/select";
+import { CircularProgress } from "@nextui-org/progress";
 
 const DropdownPage: React.FC = () => {
-  const [provinces, setProvinces] = useState<Province[]>([]);
-  const [regencies, setRegencies] = useState<Regency[]>([]);
-  const [districts, setDistricts] = useState<District[]>([]);
-  const [villages, setVillages] = useState<Village[]>([]);
-  const [selectedProvince, setSelectedProvince] = useState("");
-  const [selectedRegency, setSelectedRegency] = useState("");
-  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [provinces, setProvinces] = useState<any[]>([]);
+  const [regencies, setRegencies] = useState<any[]>([]);
+  const [districts, setDistricts] = useState<any[]>([]);
+  const [villages, setVillages] = useState<any[]>([]);
+  const [selectedProvince, setSelectedProvince] = useState<string>("");
+  const [selectedRegency, setSelectedRegency] = useState<string>("");
+  const [selectedDistrict, setSelectedDistrict] = useState<string>("");
+  const [loadingProvinces, setLoadingProvinces] = useState<boolean>(false);
+  const [loadingRegencies, setLoadingRegencies] = useState<boolean>(false);
+  const [loadingDistricts, setLoadingDistricts] = useState<boolean>(false);
+  const [loadingVillages, setLoadingVillages] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchProvinces = async () => {
       try {
-        const response = await axios.get<Province[]>(
-          "https://emsifa.github.io/api-wilayah-indonesia/api/provinces.json"
-        );
+        setLoadingProvinces(true);
+        const response = await axios.get("/api/provinces");
         setProvinces(response.data);
       } catch (error) {
         console.error("Error fetching provinces:", error);
+      } finally {
+        setLoadingProvinces(false);
       }
     };
 
@@ -48,11 +35,12 @@ const DropdownPage: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (selectedProvince !== "") {
-      const fetchRegencies = async () => {
+    const fetchRegencies = async () => {
+      if (selectedProvince !== "") {
         try {
-          const response = await axios.get<Regency[]>(
-            `https://emsifa.github.io/api-wilayah-indonesia/api/regencies/${selectedProvince}.json`
+          setLoadingRegencies(true);
+          const response = await axios.get(
+            `/api/regencies?provinceId=${selectedProvince}`
           );
           setRegencies(response.data);
           setSelectedRegency("");
@@ -60,80 +48,155 @@ const DropdownPage: React.FC = () => {
           setVillages([]);
         } catch (error) {
           console.error("Error fetching regencies:", error);
+        } finally {
+          setLoadingRegencies(false);
         }
-      };
+      }
+    };
 
-      fetchRegencies();
-    }
+    fetchRegencies();
   }, [selectedProvince]);
 
   useEffect(() => {
-    if (selectedRegency !== "") {
-      const fetchDistricts = async () => {
+    const fetchDistricts = async () => {
+      if (selectedRegency !== "") {
         try {
-          const response = await axios.get<District[]>(
-            `https://emsifa.github.io/api-wilayah-indonesia/api/districts/${selectedRegency}.json`
+          setLoadingDistricts(true);
+          const response = await axios.get(
+            `/api/districts?regencyId=${selectedRegency}`
           );
           setDistricts(response.data);
           setSelectedDistrict("");
           setVillages([]);
         } catch (error) {
           console.error("Error fetching districts:", error);
+        } finally {
+          setLoadingDistricts(false);
         }
-      };
+      }
+    };
 
-      fetchDistricts();
-    }
+    fetchDistricts();
   }, [selectedRegency]);
 
   useEffect(() => {
-    if (selectedDistrict !== "") {
-      const fetchVillages = async () => {
+    const fetchVillages = async () => {
+      if (selectedDistrict !== "") {
         try {
-          const response = await axios.get<Village[]>(
-            `https://emsifa.github.io/api-wilayah-indonesia/api/villages/${selectedDistrict}.json`
+          setLoadingVillages(true);
+          const response = await axios.get(
+            `/api/villages?districtId=${selectedDistrict}`
           );
           setVillages(response.data);
         } catch (error) {
           console.error("Error fetching villages:", error);
+        } finally {
+          setLoadingVillages(false);
         }
-      };
+      }
+    };
 
-      fetchVillages();
-    }
+    fetchVillages();
   }, [selectedDistrict]);
 
   return (
     <div>
-      <Dropdown
-        label="Provinsi"
-        value={selectedProvince}
-        onChange={(e) => setSelectedProvince(e.target.value)}
-        options={provinces}
-      />
+      <h1 className="font-bold text-2xl text-center">API WILAYAH INDONESIA</h1>
+      <div className="p-3">
+        {loadingProvinces ? (
+          <CircularProgress />
+        ) : (
+          <div>
+            <label className="pl-2 px-2 font-bold">Provinsi:</label>
+            <Select
+              aria-label="Pilih Provinsi"
+              placeholder="Pilih Provinsi"
+              value={selectedProvince}
+              onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                setSelectedProvince(e.target.value)
+              }
+            >
+              {provinces.map((province) => (
+                <SelectItem key={province.id} value={province.id}>
+                  {province.name}
+                </SelectItem>
+              ))}
+            </Select>
+          </div>
+        )}
+      </div>
       {selectedProvince && (
-        <Dropdown
-          label="Kabupaten/Kota"
-          value={selectedRegency}
-          onChange={(e) => setSelectedRegency(e.target.value)}
-          options={regencies}
-        />
+        <div className="p-3">
+          {loadingRegencies ? (
+            <CircularProgress />
+          ) : (
+            <div>
+              <label className="pl-2 px-2 font-bold">Kabupaten/Kota:</label>
+              <Select
+                aria-label="Pilih Kabupaten/Kota"
+                placeholder="Pilih Kabupaten/Kota"
+                value={selectedRegency}
+                onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                  setSelectedRegency(e.target.value)
+                }
+              >
+                {regencies.map((regency) => (
+                  <SelectItem key={regency.id} value={regency.id}>
+                    {regency.name}
+                  </SelectItem>
+                ))}
+              </Select>
+            </div>
+          )}
+        </div>
       )}
       {selectedRegency && (
-        <Dropdown
-          label="Kecamatan"
-          value={selectedDistrict}
-          onChange={(e) => setSelectedDistrict(e.target.value)}
-          options={districts}
-        />
+        <div className="p-3">
+          {loadingDistricts ? (
+            <CircularProgress />
+          ) : (
+            <div>
+              <label className="pl-2 px-2 font-bold">Kecamatan:</label>
+              <Select
+                aria-label="Pilih Kecamatan"
+                placeholder="Pilih Kecamatan"
+                value={selectedDistrict}
+                onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                  setSelectedDistrict(e.target.value)
+                }
+              >
+                {districts.map((district) => (
+                  <SelectItem key={district.id} value={district.id}>
+                    {district.name}
+                  </SelectItem>
+                ))}
+              </Select>
+            </div>
+          )}
+        </div>
       )}
       {selectedDistrict && (
-        <Dropdown
-          label="Kelurahan"
-          value=""
-          onChange={() => {}}
-          options={villages}
-        />
+        <div className="p-3">
+          {loadingVillages ? (
+            <CircularProgress />
+          ) : (
+            <div>
+              <label className="pl-2 px-2 font-bold">Kelurahan:</label>
+              <Select
+                aria-label="Pilih Kelurahan"
+                placeholder="Pilih Kelurahan"
+                value=""
+                onChange={() => {}}
+              >
+                {villages.map((village) => (
+                  <SelectItem key={village.id} value={village.id}>
+                    {village.name}
+                  </SelectItem>
+                ))}
+              </Select>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
