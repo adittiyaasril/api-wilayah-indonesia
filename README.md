@@ -1,7 +1,28 @@
-# Next.js & NextUI Template
+## How to see deployed project
 
-This is a template for creating applications using Next.js 13 (app directory) and NextUI (v2).
+Open your browser and paste or click link below.
 
+https://soal2-adittiyaasril.vercel.app/
+
+
+
+## How to Use
+
+
+- Clone or download this repo
+
+
+- Install dependencies
+
+  ```bash
+  npm install
+  ```
+
+- Run the development server
+
+  ```bash
+  npm run dev
+  ```
 ## Technologies Used
 
 - [Next.js 13](https://nextjs.org/docs/getting-started)
@@ -11,29 +32,6 @@ This is a template for creating applications using Next.js 13 (app directory) an
 - [TypeScript](https://www.typescriptlang.org/)
 - [Framer Motion](https://www.framer.com/motion/)
 - [next-themes](https://github.com/pacocoursey/next-themes)
-
-## How to Use
-
-
-### Use the template with create-next-app
-
-To create a new project based on this template using `create-next-app`, run the following command:
-
-```bash
-npx create-next-app -e https://github.com/nextui-org/next-app-template
-```
-
-### Install dependencies
-
-```bash
-npm install
-```
-
-### Run the development server
-
-```bash
-npm run dev
-```
 
 ## License
 
