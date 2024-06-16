@@ -2,15 +2,9 @@
 
 Open your browser and paste or click link below.
 
-https://soal2-adittiyaasril.vercel.app/
-
-
-
 ## How to Use
 
-
 - Clone or download this repo
-
 
 - Install dependencies
 
@@ -23,6 +17,7 @@ https://soal2-adittiyaasril.vercel.app/
   ```bash
   npm run dev
   ```
+
 ## Technologies Used
 
 - [Next.js 13](https://nextjs.org/docs/getting-started)
