@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Select, SelectItem } from "@nextui-org/select";
 import { CircularProgress } from "@nextui-org/progress";
@@ -13,6 +13,7 @@ const DropdownPage: React.FC = () => {
   const [selectedProvince, setSelectedProvince] = useState<string>("");
   const [selectedRegency, setSelectedRegency] = useState<string>("");
   const [selectedDistrict, setSelectedDistrict] = useState<string>("");
+  const [selectedVillage, setSelectedVillage] = useState<string>("");
   const [loadingProvinces, setLoadingProvinces] = useState<boolean>(false);
   const [loadingRegencies, setLoadingRegencies] = useState<boolean>(false);
   const [loadingDistricts, setLoadingDistricts] = useState<boolean>(false);
@@ -43,9 +44,6 @@ const DropdownPage: React.FC = () => {
             `/api/regencies?provinceId=${selectedProvince}`
           );
           setRegencies(response.data);
-          setSelectedRegency("");
-          setDistricts([]);
-          setVillages([]);
         } catch (error) {
           console.error("Error fetching regencies:", error);
         } finally {
@@ -66,8 +64,6 @@ const DropdownPage: React.FC = () => {
             `/api/districts?regencyId=${selectedRegency}`
           );
           setDistricts(response.data);
-          setSelectedDistrict("");
-          setVillages([]);
         } catch (error) {
           console.error("Error fetching districts:", error);
         } finally {
@@ -99,6 +95,34 @@ const DropdownPage: React.FC = () => {
     fetchVillages();
   }, [selectedDistrict]);
 
+  const handleProvinceChange = (e: any) => {
+    setSelectedProvince(e.target.value);
+    setSelectedRegency("");
+    setSelectedDistrict("");
+    setSelectedVillage("");
+    setRegencies([]);
+    setDistricts([]);
+    setVillages([]);
+  };
+
+  const handleRegencyChange = (e: any) => {
+    setSelectedRegency(e.target.value);
+    setSelectedDistrict("");
+    setSelectedVillage("");
+    setDistricts([]);
+    setVillages([]);
+  };
+
+  const handleDistrictChange = (e: any) => {
+    setSelectedDistrict(e.target.value);
+    setSelectedVillage("");
+    setVillages([]);
+  };
+
+  const handleVillageChange = (e: any) => {
+    setSelectedVillage(e.target.value);
+  };
+
   return (
     <div>
       <h1 className="font-bold text-2xl text-center">API WILAYAH INDONESIA</h1>
@@ -112,9 +136,7 @@ const DropdownPage: React.FC = () => {
               aria-label="Pilih Provinsi"
               placeholder="Pilih Provinsi"
               value={selectedProvince}
-              onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                setSelectedProvince(e.target.value)
-              }
+              onChange={handleProvinceChange}
             >
               {provinces.map((province) => (
                 <SelectItem key={province.id} value={province.id}>
@@ -136,9 +158,7 @@ const DropdownPage: React.FC = () => {
                 aria-label="Pilih Kabupaten/Kota"
                 placeholder="Pilih Kabupaten/Kota"
                 value={selectedRegency}
-                onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                  setSelectedRegency(e.target.value)
-                }
+                onChange={handleRegencyChange}
               >
                 {regencies.map((regency) => (
                   <SelectItem key={regency.id} value={regency.id}>
@@ -161,9 +181,7 @@ const DropdownPage: React.FC = () => {
                 aria-label="Pilih Kecamatan"
                 placeholder="Pilih Kecamatan"
                 value={selectedDistrict}
-                onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                  setSelectedDistrict(e.target.value)
-                }
+                onChange={handleDistrictChange}
               >
                 {districts.map((district) => (
                   <SelectItem key={district.id} value={district.id}>
@@ -185,8 +203,8 @@ const DropdownPage: React.FC = () => {
               <Select
                 aria-label="Pilih Kelurahan"
                 placeholder="Pilih Kelurahan"
-                value=""
-                onChange={() => {}}
+                value={selectedVillage}
+                onChange={handleVillageChange}
               >
                 {villages.map((village) => (
                   <SelectItem key={village.id} value={village.id}>
